@@ -32,6 +32,7 @@ public:
                    char clb_type,
                    bool fold_reg);
     double energy() override;
+    void print_hpwl();
     std::map<std::string, std::pair<int, int>> realize();
     void anneal() override;
     double estimate() override;

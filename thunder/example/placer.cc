@@ -327,6 +327,8 @@ int main(int argc, char *argv[]) {
     global_refine.refine(it, 0.001, true);
     auto result = global_refine.realize();
 
+    global_refine.print_hpwl();
+
     // check the placement
     check_placement(raw_netlist, result, layout);
 

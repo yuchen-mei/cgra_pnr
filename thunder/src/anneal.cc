@@ -47,8 +47,9 @@ void SimAnneal::refine(int num_iter, double threshold, bool print_improvement) {
                    total_improvement);
             total_improvement += improvement;
         }
-        if (improvement < threshold)
+        if (improvement < threshold) {
             break;
+        }
     }
 }
 

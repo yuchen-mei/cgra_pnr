@@ -3,6 +3,7 @@
 #include <cassert>
 #include <string>
 #include <cmath>
+#include <fstream>
 #include "detailed.hh"
 #include "include/tqdm.h"
 
@@ -574,7 +575,8 @@ void DetailedPlacer::move() {
     moves_.clear();
     double action = detail_rand_.uniform(0.0, 1.0);
 
-    if (action < 0.5) {
+    // if (action < 0.5) {
+    if (action < 0.0) {
         // Translate
         auto curr_ins_id =
                 instance_ids_[detail_rand_.uniform<uint64_t>
@@ -640,15 +642,28 @@ void DetailedPlacer::move() {
             next_ins = instances_[detail_rand_.uniform<uint64_t>(start_index,
                                                                     end_index)];
         } else {
-            int r = (int)(d_limit_ / 2);
-            r = r > 0 ? r : 1;
-            const int x_start = CLAMP(curr_pos.x - r, 0, max_dim_);
-            const int x_end = CLAMP(curr_pos.x + r, 0, max_dim_);
-            const int y_start = CLAMP(curr_pos.y - r, 0, max_dim_);
-            const int y_end = CLAMP(curr_pos.y + r, 0, max_dim_);
+            int r = (int)(d_limit_);
+            int r_x = CLAMP(r, 1, max_dim_); 
+
+            // Need to be able to skip to valid locations
+            // This is hard coded but shouldn't really matter
+            if (blk_type == 'm') {
+                r_x = CLAMP(r, 4, max_dim_); 
+            } else if (blk_type == 'p') {
+                r_x = CLAMP(r, 2, max_dim_); 
+            }
+
+            const int x_start = CLAMP(curr_pos.x - r_x, 0, max_dim_);
+            const int x_end = CLAMP(curr_pos.x + r_x, 0, max_dim_);
+
+            int r_y = CLAMP(r, 1, max_dim_); 
+            const int y_start = CLAMP(curr_pos.y - r_y, 0, max_dim_);
+            const int y_end = CLAMP(curr_pos.y + r_y, 0, max_dim_);
             const int next_x = detail_rand_.uniform(x_start, x_end);
             const int next_y = detail_rand_.uniform(y_start, y_end);
+
             const auto pos = std::make_pair(next_x, next_y);
+
             if (loc_instances_[blk_type].find(pos)
                 == loc_instances_[blk_type].end())
                 return;
@@ -701,11 +716,16 @@ void DetailedPlacer::anneal() {
     // the anneal schedule is different from VPR's because we want to
     // estimate the overall iterations
     sa_setup();
+
+    std::ofstream log_file;
+    log_file.open ("/aha/anneal_log.txt");
+
     // tqdm bar;
     // uint32_t total_swaps = estimate_num_swaps();
     double temp = tmax;
     // uint32_t current_swap = 0;
     while (temp >= tmin) {
+        uint32_t valid_attempted_moves = 0;
         uint32_t accept = 0;
         for (uint32_t i = 0; i < num_swap_; i++) {
             move();
@@ -713,6 +733,8 @@ void DetailedPlacer::anneal() {
             double de = new_energy - this->curr_energy;
             if (de == 0)
                 continue;
+
+            valid_attempted_moves++;
             if (de > 0.0 && exp(-de / temp) < rand_.uniform<double>(0.0, 1.0)) {
                 continue;
             } else {
@@ -740,15 +762,22 @@ void DetailedPlacer::anneal() {
         //     temp *= 0.8;
         // }
         temp *= 0.99;
+        // temp -= tmax/1000;
+        
+        
 
         // bar.progress(current_swap++, total_swaps);
         // std::cout << "Progress: " << current_swap++ << "/" << total_swaps << "\r" << std::flush;
 
-        double r_accept = (double)accept / num_swap_;
+        double r_accept = (double)accept / valid_attempted_moves;
         d_limit_ = d_limit_ * (1 - 0.44 + r_accept);
         d_limit_ = CLAMP(d_limit_, 1, max_dim_);
+
+        log_file << (temp/tmax) << " " << get_hpwl(this->netlist_, this->instances_) << " " << r_accept << " " << d_limit_ << std::endl;
     }
     // bar.finish();
+
+    log_file.close();
 }
 
 void DetailedPlacer::sa_setup() {
@@ -773,9 +802,9 @@ void DetailedPlacer::sa_setup() {
     for (auto const e: diff_e)
         diff_sum += (e - mean) * (e - mean);
 
-    tmax = sqrt(diff_sum / (num_blocks_ + 1)) * 20;
+    tmax = sqrt(diff_sum / (num_blocks_ + 1));
     num_swap_ = static_cast<uint32_t>(10 * pow(num_blocks_, 1.33));
-    tmin = 0.005 * curr_energy / netlist_.size();
+    tmin = 0.001 * curr_energy / netlist_.size();
 
     // If all random moves did not change energy somehow
     if (tmax <= tmin) {
@@ -849,6 +878,8 @@ double DetailedPlacer::energy() {
         // compute the new hpwl
         double new_hpwl = get_hpwl(nets, this->instances_);
 
+        // std::cout << "new hpwl: " << new_hpwl << std::endl;
+
         // revert
         for (const auto &iter : original)
             instances_[iter.first].pos = iter.second;
@@ -858,6 +889,11 @@ double DetailedPlacer::energy() {
     } else {
         return this->curr_energy;
     }
+}
+
+void DetailedPlacer::print_hpwl() {
+    double real_hpwl = get_hpwl(this->netlist_, this->instances_);
+    std::cout << "Final hpwl: " << real_hpwl << std::endl;
 }
 
 void DetailedPlacer::commit_changes() {
