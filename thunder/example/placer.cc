@@ -216,6 +216,18 @@ std::optional<uint32_t> get_density_param() {
     return std::nullopt;
 }
 
+std::optional<float> get_anneal_param() {
+    if (auto *str_value = std::getenv("PNR_PLACER_ANNEAL")) {
+        try {
+            auto res = std::stof(str_value);
+            return res;
+        } catch (const std::invalid_argument &) {
+
+        } catch (const std::out_of_range &) {}
+    }
+    return std::nullopt;
+}
+
 int main(int argc, char *argv[]) {
     auto const[layout_file, netlist_file, result_filename, use_prefix] =
     parse_cli_args(argc, argv);
@@ -305,8 +317,10 @@ int main(int argc, char *argv[]) {
 
     auto hpwl_exp_param = get_hpwl_exp();
     auto density_param = get_density_param();
+    auto anneal_param = get_anneal_param();
     set_hpwl_exp_param(hpwl_exp_param);
     set_density_param(density_param);
+    set_anneal_param(anneal_param);
 
     map<string, pair<int, int>> dp_result = detailed_placement(clusters,
                                                                netlist,

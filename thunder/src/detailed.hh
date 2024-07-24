@@ -12,6 +12,7 @@ struct DetailedMove {
     Point dest_pos;
 };
 bool operator< (const DetailedMove &m1, const DetailedMove &m2);
+void set_anneal_param(std::optional<float> value);
 
 class DetailedPlacer: public SimAnneal {
 public:

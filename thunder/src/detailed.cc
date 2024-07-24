@@ -22,6 +22,8 @@ using std::set;
 
 char DetailedPlacer::REG_BLK_TYPE = 'r';
 
+std::optional<float> anneal_param = {};
+
 bool operator< (const DetailedMove &m1, const DetailedMove &m2) {
     return m1.source_blk_id < m2.source_blk_id;
 }
@@ -568,109 +570,54 @@ void DetailedPlacer::move() {
 
 #endif
 
-    // we have a couple of choices
-    // 1. translate in either x or y direction
-    // 2. swap locations
-
     moves_.clear();
-    double action = detail_rand_.uniform(0.0, 1.0);
 
-    // if (action < 0.5) {
-    if (action < 0.0) {
-        // Translate
-        auto curr_ins_id =
-                instance_ids_[detail_rand_.uniform<uint64_t>
-                            (0, instance_ids_.size() - 1)];
-        auto curr_ins = instances_[curr_ins_id];
-        if (curr_ins.fixed)
-            return;
-        
-        char blk_type = curr_ins.name[0];
-        
-        const auto curr_pos = curr_ins.pos;
+    // Swap
+    auto curr_ins_id =
+            instance_ids_[detail_rand_.uniform<uint64_t>
+                        (0, instance_ids_.size() - 1)];
+    auto curr_ins = instances_[curr_ins_id];
+    if (curr_ins.fixed)
+        return;
 
-        int moveX = 0;
-        int moveY = 0;
-
-        moveX = detail_rand_.uniform<int>(-10, 10);
-        moveY = detail_rand_.uniform<int>(-10, 10);
-
-        if (moveX == 0 && moveY == 0)
-            return;
-
-
-        const auto pos = std::make_pair(curr_pos.x + moveX, curr_pos.y + moveY);
-
-
-        if (pos.first < 0 || pos.second < 0 || pos.first >= (int)board_layout_.width() || pos.second >= (int)board_layout_.height()) {
-            return;
-        }
-
-        if (!board_layout_.is_legal(curr_ins.name, pos.first, pos.second)) {
-            return;
-        }
-
-        if (loc_instances_[blk_type].find(pos) == loc_instances_[blk_type].end()) {
-            return;
-        }
-
-        auto position = std::find(avail_pos_anneal_[blk_type].begin(), avail_pos_anneal_[blk_type].end(), pos);
-        if (position == avail_pos_anneal_[blk_type].end()) {
-            return;
-        } 
-
-        const int dest_id = *loc_instances_[blk_type][pos].begin();
-        moves_.insert(DetailedMove{.source_blk_id = curr_ins.id, .source_pos = Point(curr_pos),
-                                   .dest_blk_id = dest_id, .dest_pos = Point(pos)});
+    // only swap with the same type
+    char blk_type = curr_ins.name[0];
+    // search for x, y that is within the d_limit
+    const auto curr_pos = curr_ins.pos;
+    Instance next_ins;
+    if (d_limit_ >= max_dim_) {
+        auto[start_index, end_index] = instance_type_index_[blk_type];
+        next_ins = instances_[detail_rand_.uniform<uint64_t>(start_index,
+                                                                end_index)];
     } else {
-        // Swap
-        
-        auto curr_ins_id =
-                instance_ids_[detail_rand_.uniform<uint64_t>
-                            (0, instance_ids_.size() - 1)];
-        auto curr_ins = instances_[curr_ins_id];
-        if (curr_ins.fixed)
+        int r = (int)(d_limit_);
+        int r_x = CLAMP(r, 1, max_dim_); 
+
+        // Need to be able to skip to valid locations
+        // This is hard coded but shouldn't really matter
+        if (blk_type == 'm') {
+            r_x = CLAMP(r, 4, max_dim_); 
+        } else if (blk_type == 'p') {
+            r_x = CLAMP(r, 2, max_dim_); 
+        }
+
+        const int x_start = CLAMP(curr_pos.x - r_x, 0, max_dim_);
+        const int x_end = CLAMP(curr_pos.x + r_x, 0, max_dim_);
+
+        int r_y = CLAMP(r, 1, max_dim_); 
+        const int y_start = CLAMP(curr_pos.y - r_y, 0, max_dim_);
+        const int y_end = CLAMP(curr_pos.y + r_y, 0, max_dim_);
+        const int next_x = detail_rand_.uniform(x_start, x_end);
+        const int next_y = detail_rand_.uniform(y_start, y_end);
+
+        const auto pos = std::make_pair(next_x, next_y);
+
+        if (loc_instances_[blk_type].find(pos)
+            == loc_instances_[blk_type].end())
             return;
 
-        // only swap with the same type
-        char blk_type = curr_ins.name[0];
-        // search for x, y that is within the d_limit
-        const auto curr_pos = curr_ins.pos;
-        Instance next_ins;
-        if (d_limit_ >= max_dim_) {
-            auto[start_index, end_index] = instance_type_index_[blk_type];
-            next_ins = instances_[detail_rand_.uniform<uint64_t>(start_index,
-                                                                    end_index)];
-        } else {
-            int r = (int)(d_limit_);
-            int r_x = CLAMP(r, 1, max_dim_); 
-
-            // Need to be able to skip to valid locations
-            // This is hard coded but shouldn't really matter
-            if (blk_type == 'm') {
-                r_x = CLAMP(r, 4, max_dim_); 
-            } else if (blk_type == 'p') {
-                r_x = CLAMP(r, 2, max_dim_); 
-            }
-
-            const int x_start = CLAMP(curr_pos.x - r_x, 0, max_dim_);
-            const int x_end = CLAMP(curr_pos.x + r_x, 0, max_dim_);
-
-            int r_y = CLAMP(r, 1, max_dim_); 
-            const int y_start = CLAMP(curr_pos.y - r_y, 0, max_dim_);
-            const int y_end = CLAMP(curr_pos.y + r_y, 0, max_dim_);
-            const int next_x = detail_rand_.uniform(x_start, x_end);
-            const int next_y = detail_rand_.uniform(y_start, y_end);
-
-            const auto pos = std::make_pair(next_x, next_y);
-
-            if (loc_instances_[blk_type].find(pos)
-                == loc_instances_[blk_type].end())
-                return;
-
-            const int id = *loc_instances_[blk_type][pos].begin();
-            next_ins = instances_[id];
-        }
+        const int id = *loc_instances_[blk_type][pos].begin();
+        next_ins = instances_[id];
 
         if (curr_ins.name[0] != next_ins.name[0])
             throw ::runtime_error("unexpected move selection error");
@@ -698,6 +645,10 @@ void DetailedPlacer::move() {
     }
 }
 
+void set_anneal_param(std::optional<float> value) {
+    anneal_param = value;
+}
+
 void DetailedPlacer::anneal() {
 
     avail_pos_anneal_ = board_layout_.produce_available_pos();
@@ -716,9 +667,6 @@ void DetailedPlacer::anneal() {
     // the anneal schedule is different from VPR's because we want to
     // estimate the overall iterations
     sa_setup();
-
-    std::ofstream log_file;
-    log_file.open ("/aha/anneal_log.txt");
 
     // tqdm bar;
     // uint32_t total_swaps = estimate_num_swaps();
@@ -761,23 +709,17 @@ void DetailedPlacer::anneal() {
         // else if (temp >= tmin) {
         //     temp *= 0.8;
         // }
-        temp *= 0.99;
+        if (anneal_param) {
+            temp *= static_cast<float>(*anneal_param);
+        } else {
+            temp *= 0.97;
+        }
         // temp -= tmax/1000;
-        
-        
-
-        // bar.progress(current_swap++, total_swaps);
-        // std::cout << "Progress: " << current_swap++ << "/" << total_swaps << "\r" << std::flush;
 
         double r_accept = (double)accept / valid_attempted_moves;
         d_limit_ = d_limit_ * (1 - 0.44 + r_accept);
         d_limit_ = CLAMP(d_limit_, 1, max_dim_);
-
-        log_file << (temp/tmax) << " " << get_hpwl(this->netlist_, this->instances_) << " " << r_accept << " " << d_limit_ << std::endl;
     }
-    // bar.finish();
-
-    log_file.close();
 }
 
 void DetailedPlacer::sa_setup() {
@@ -802,9 +744,9 @@ void DetailedPlacer::sa_setup() {
     for (auto const e: diff_e)
         diff_sum += (e - mean) * (e - mean);
 
-    tmax = sqrt(diff_sum / (num_blocks_ + 1));
+    tmax = sqrt(diff_sum / (num_blocks_ + 1)) ;
     num_swap_ = static_cast<uint32_t>(10 * pow(num_blocks_, 1.33));
-    tmin = 0.001 * curr_energy / netlist_.size();
+    tmin = 0.01 * curr_energy / netlist_.size();
 
     // If all random moves did not change energy somehow
     if (tmax <= tmin) {
@@ -844,7 +786,11 @@ uint32_t DetailedPlacer::estimate_num_swaps() const {
     //     num_swaps++;
     // }
     while (temp >= tmin) {
-        temp *= 0.99;
+        if (anneal_param) {
+            temp *= static_cast<float>(*anneal_param);
+        } else {
+            temp *= 0.97;
+        }
         num_swaps++;
     }
     return num_swaps;
