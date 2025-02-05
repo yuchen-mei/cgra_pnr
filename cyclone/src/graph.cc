@@ -147,8 +147,18 @@ Switch::Switch(uint32_t x, uint32_t y, uint32_t num_track,
           internal_wires_(internal_wires) {
     for (uint32_t side = 0; side < SIDES; side++) {
         for (uint32_t io = 0; io < IOS; io++) {
-            sbs_[side][io] = ::vector<shared_ptr<SwitchBoxNode>>(num_track);
-            for (uint32_t i = 0; i < num_track; i++) {
+            uint32_t num_actual_tracks = num_track;
+
+            // MO: TALL SB HACK 
+            if (switch_id == 0) {
+                if (static_cast<SwitchBoxSide>(side) == SwitchBoxSide::Left || static_cast<SwitchBoxSide>(side) == SwitchBoxSide::Right) {
+                    printf("Using 16 tracks for tall SB\n");
+                    num_actual_tracks = 16;
+                } 
+            }
+
+            sbs_[side][io] = ::vector<shared_ptr<SwitchBoxNode>>(num_actual_tracks);
+            for (uint32_t i = 0; i < num_actual_tracks; i++) {
                 sbs_[side][io][i] =
                         ::make_shared<SwitchBoxNode>(x, y, width, i,
                                                      gsi(side),
@@ -316,10 +326,25 @@ std::shared_ptr<Node> RoutingGraph::search_create_node(const Node &node) {
                 auto const &track = sb_node.track;
                 auto const &side = sb_node.side;
                 auto const &io = sb_node.io;
-                if (track > tile.switchbox.num_track)
-                    throw ::runtime_error("node is on a track that doesn't "
-                                          "exist in the switch box");
 
+                // MO: Tall SB HACK 
+                if (tile.switchbox.id == 0) {
+                    if (static_cast<SwitchBoxSide>(side) == SwitchBoxSide::Left || static_cast<SwitchBoxSide>(side) == SwitchBoxSide::Right) {
+                        if (track > 16)
+                            throw ::runtime_error("node is on a track that doesn't "
+                                                "exist in the switch box");
+                    } else {
+                        if (track > tile.switchbox.num_track)
+                            throw ::runtime_error("node is on a track that doesn't "
+                                                "exist in the switch box");
+                    }
+                     
+                } else {
+                      if (track > tile.switchbox.num_track)
+                            throw ::runtime_error("node is on a track that doesn't "
+                                                "exist in the switch box");
+                }
+              
                 return tile.switchbox[{track, side, io}];
             }
             case NodeType::Generic:
