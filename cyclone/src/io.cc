@@ -338,7 +338,6 @@ RoutingGraph load_routing_graph(const std::string &filename) {
             uint32_t id = stou(line_tokens[2]);
             uint32_t num_track = stou(line_tokens[3]);
             uint32_t num_horizontal_track = stou(line_tokens[4]);
-            printf("Num horizontal track: %d\n", num_horizontal_track);
             // loop through the lines until we hit end
             // this will be the internal wiring
             std::set<std::tuple<uint32_t, SwitchBoxSide, uint32_t,
