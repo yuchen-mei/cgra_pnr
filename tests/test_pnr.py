@@ -24,7 +24,7 @@ def test_pnr(dirname):
         subprocess.check_call(args, cwd=vectors_dir)
         # call router
         graphs = []
-        for i in {1, 16}:
+        for i in {1, 17}:
             graphs += ["-g", os.path.join(dirname, "{0}.graph".format(i))]
         args = ["router", "-p", netlist, "-P", placement_file] + graphs + ["-o", route_file]
         print("args", " ".join(args))
