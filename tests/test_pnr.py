@@ -20,7 +20,7 @@ def test_pnr(dirname):
         placement_file = os.path.join(temp, "design.place")
         route_file = os.path.join(temp, "design.route")
         # call placer
-        args = ["placer -f", layout, netlist, placement_file]
+        args = ["placer", "-f", layout, netlist, placement_file]
         subprocess.check_call(args, cwd=vectors_dir)
         # call router
         graphs = []
