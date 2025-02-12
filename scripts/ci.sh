@@ -6,6 +6,24 @@ if [[ "$OS" == "linux" ]]; then
         docker pull keyiz/manylinux-igraph
         docker run -d --name manylinux --rm -it --mount type=bind,source="$(pwd)"/../cgra_pnr,target=/cgra_pnr keyiz/manylinux-igraph bash
 
+        docker exec -i manylinux bash -c 'set -e; 
+            file_dir=/cgra_pnr; 
+            
+            # Build placer
+            build_dir=${file_dir}/thunder/build;
+            mkdir -p ${build_dir};
+            cd ${build_dir};
+            cmake .. -DCMAKE_BUILD_TYPE=Release;
+            make -j placer;
+            cd ..;
+
+            # Build router
+            build_dir=${file_dir}/cyclone/build;
+            mkdir -p ${build_dir};
+            cd ${build_dir};
+            cmake .. -DCMAKE_BUILD_TYPE=Release;
+            make -j router;
+            cd ..;'
         docker exec -i manylinux bash -c 'cd /cgra_pnr/thunder && python setup.py bdist_wheel'
         docker exec -i manylinux bash -c 'cd /cgra_pnr/thunder && auditwheel show dist/*'
         docker exec -i manylinux bash -c 'cd /cgra_pnr/thunder && auditwheel repair dist/*'
