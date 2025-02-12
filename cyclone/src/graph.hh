@@ -166,7 +166,7 @@ bool operator==(const std::shared_ptr<Node> &ptr, const Node &node);
 class Switch {
 
 public:
-    Switch(uint32_t x, uint32_t y, uint32_t num_track,
+    Switch(uint32_t x, uint32_t y, uint32_t num_track, uint32_t num_horizontal_track,
            uint32_t width, uint32_t switch_id,
            const std::set<std::tuple<uint32_t,
                           SwitchBoxSide, uint32_t,
@@ -175,6 +175,7 @@ public:
     uint32_t x;
     uint32_t y;
     uint32_t num_track;
+    uint32_t num_horizontal_track;
     uint32_t width;
 
     // it's the programmer's responsibility to ensure that each switch type
@@ -227,6 +228,7 @@ struct Tile {
     std::map<std::string, std::shared_ptr<RegisterMuxNode>> rmux_nodes;
 
     uint32_t num_tracks() { return static_cast<uint32_t>(switchbox.num_track); }
+    uint32_t num_horizontal_tracks() { return static_cast<uint32_t>(switchbox.num_horizontal_track); }
 
     Tile(uint32_t x, uint32_t y, const Switch &switchbox)
         : Tile(x, y, 1, switchbox) { };

@@ -332,11 +332,12 @@ RoutingGraph load_routing_graph(const std::string &filename) {
         auto line_tokens = get_tokens(line);
         if (line_tokens[0] == Switch::TOKEN) {
             // create a switch based on its index
-            if (line_tokens.size() != 4)
+            if (line_tokens.size() != 5)
                 throw ::runtime_error("unable to process line " + line);
             uint32_t width = stou(line_tokens[1]);
             uint32_t id = stou(line_tokens[2]);
             uint32_t num_track = stou(line_tokens[3]);
+            uint32_t num_horizontal_track = stou(line_tokens[4]);
             // loop through the lines until we hit end
             // this will be the internal wiring
             std::set<std::tuple<uint32_t, SwitchBoxSide, uint32_t,
@@ -358,7 +359,7 @@ RoutingGraph load_routing_graph(const std::string &filename) {
                 SwitchBoxSide side_to = gsi(stou(line_tokens[3]));
                 wires.insert({track_from, side_from, track_to, side_to});
             }
-            Switch switchbox(0, 0, num_track, width, id, wires);
+            Switch switchbox(0, 0, num_track, num_horizontal_track, width, id, wires);
             switch_map.insert({id, switchbox});
         }
         else if (line_tokens[0] == Tile::TOKEN) {

@@ -139,12 +139,13 @@ void init_graph(py::module &m) {
         });
 
     py::class_<Switch>(m, "Switch")
-        .def(py::init<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
+        .def(py::init<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
                       const std::set<std::tuple<uint32_t, SwitchBoxSide,
                                                 uint32_t, SwitchBoxSide>> &>())
         .def_readwrite("x", &Switch::x)
         .def_readwrite("y", &Switch::y)
         .def_readwrite("num_track", &Switch::num_track)
+        .def_readwrite("num_horizontal_track", &Switch::num_horizontal_track)
         .def_readwrite("id", &Switch::id)
         .def_readwrite("width", &Switch::width)
         .def("internal_wires", &Switch::internal_wires)

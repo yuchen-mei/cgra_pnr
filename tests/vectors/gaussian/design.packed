@@ -1,86 +1,215 @@
 Netlists:
-e1: (p25, alu_res)	(p0, data1)
-e2: (p0, alu_res)	(p1, data0)
-e3: (p26, alu_res)	(p1, data1)
-e4: (p1, alu_res)	(p2, data0)
-e5: (p27, alu_res)	(p2, data1)
-e6: (p2, alu_res)	(p3, data0)
-e7: (p28, alu_res)	(p3, data1)
-e8: (p3, alu_res)	(p4, data0)
-e9: (p29, alu_res)	(p4, data1)
-e10: (p4, alu_res)	(p5, data0)
-e11: (p30, alu_res)	(p5, data1)
-e12: (p5, alu_res)	(p6, data0)
-e13: (p31, alu_res)	(p6, data1)
-e14: (p6, alu_res)	(p7, data0)
-e15: (p32, alu_res)	(p7, data1)
-e16: (p7, alu_res)	(p8, data0)
-e17: (p33, alu_res)	(p8, data1)
-e18: (p8, alu_res)	(p40, data0)
-e20: (p40, alu_res)	(I20, f2io_16)
-e30: (I21, io2f_16)	(p33, data1)	(r34, reg)	(m24, data_in_0)
-e31: (r34, reg)	(p32, data1)	(p31, data1)
-e33: (m24, data_out_0)	(p27, data1)	(r38, reg)
-e34: (r36, reg)	(p29, data1)	(p28, data1)
-e36: (m24, data_out_1)	(p30, data1)	(r36, reg)
-e37: (r38, reg)	(p26, data1)	(p25, data1)
-e39: (i23, io2f_1)	(m24, flush)
-e40: (m24, stencil_valid)	(i22, f2io_1)
+e1: (r20, reg)	(I0, f2io_17)
+e2: (r35, reg)	(i0, f2io_1)
+e3: (r21, reg)	(I1, f2io_17)
+e4: (r36, reg)	(i1, f2io_1)
+e5: (r19, reg)	(r0, reg)	(p21, PE_input_width_17_num_1)
+e6: (r0, reg)	(r1, reg)
+e7: (r1, reg)	(r2, reg)
+e8: (r30, reg)	(r3, reg)
+e9: (r3, reg)	(r4, reg)
+e10: (r4, reg)	(r5, reg)	(p13, PE_input_width_17_num_0)
+e11: (m0, MEM_output_width_17_num_0)	(r6, reg)	(p17, PE_input_width_17_num_1)
+e14: (r6, reg)	(r7, reg)
+e15: (r7, reg)	(r8, reg)	(p8, PE_input_width_17_num_1)
+e16: (m1, MEM_output_width_17_num_0)	(r9, reg)	(p20, PE_input_width_17_num_1)
+e19: (r9, reg)	(r10, reg)
+e20: (r10, reg)	(r11, reg)	(p11, PE_input_width_17_num_1)
+e21: (r11, reg)	(r12, reg)
+e22: (r26, reg)	(r13, reg)
+e23: (r13, reg)	(r14, reg)	(p23, PE_input_width_17_num_0)
+e24: (r14, reg)	(r15, reg)
+e25: (m2, MEM_output_width_17_num_0)	(r19, reg)	(p10, PE_input_width_17_num_1)
+e26: (m2, MEM_output_width_17_num_1)	(r16, reg)	(p7, PE_input_width_17_num_1)
+e28: (r16, reg)	(r17, reg)	(p18, PE_input_width_17_num_1)
+e29: (r17, reg)	(r18, reg)
+e30: (r31, reg)	(m0, MEM_input_width_17_num_2)
+e31: (r32, reg)	(m1, MEM_input_width_17_num_2)
+e32: (r27, reg)	(m2, MEM_input_width_17_num_2)
+e33: (I2, io2f_17)	(r22, reg)
+e39: (r22, reg)	(r23, reg)	(r24, reg)
+e40: (r23, reg)	(r25, reg)	(r26, reg)
+e41: (r24, reg)	(r27, reg)
+e42: (r2, reg)	(p12, PE_input_width_17_num_1)
+e43: (r18, reg)	(p9, PE_input_width_17_num_1)
+e44: (r15, reg)	(p6, PE_input_width_17_num_1)
+e45: (r25, reg)	(p5, PE_input_width_17_num_0)
+e46: (p5, PE_output_width_17_num_1)	(p13, PE_input_width_17_num_2)
+e51: (p13, PE_output_width_17_num_1)	(p6, PE_input_width_17_num_2)
+e56: (p6, PE_output_width_17_num_1)	(p7, PE_input_width_17_num_2)
+e61: (p7, PE_output_width_17_num_1)	(p8, PE_input_width_17_num_2)
+e66: (p8, PE_output_width_17_num_1)	(p9, PE_input_width_17_num_2)
+e71: (p9, PE_output_width_17_num_1)	(p10, PE_input_width_17_num_2)
+e76: (p10, PE_output_width_17_num_1)	(p11, PE_input_width_17_num_2)
+e81: (p11, PE_output_width_17_num_1)	(p4, PE_input_width_17_num_0)
+e86: (p2, PE_output_width_17_num_1)	(p4, PE_input_width_17_num_2)
+e91: (p4, PE_output_width_17_num_1)	(p12, PE_input_width_17_num_2)
+e96: (p12, PE_output_width_17_num_1)	(p0, PE_input_width_17_num_0)
+e101: (p0, PE_output_width_17_num_1)	(r20, reg)
+e108: (m4, MEM_output_width_1_num_2)	(r35, reg)
+e109: (I3, io2f_17)	(r33, reg)
+e115: (r33, reg)	(r34, reg)	(r28, reg)
+e116: (r34, reg)	(r29, reg)	(r30, reg)
+e117: (r28, reg)	(r31, reg)	(r32, reg)
+e118: (r12, reg)	(p22, PE_input_width_17_num_1)
+e119: (r8, reg)	(p19, PE_input_width_17_num_1)
+e120: (r5, reg)	(p16, PE_input_width_17_num_1)
+e121: (r29, reg)	(p15, PE_input_width_17_num_0)
+e122: (p15, PE_output_width_17_num_1)	(p23, PE_input_width_17_num_2)
+e127: (p23, PE_output_width_17_num_1)	(p16, PE_input_width_17_num_2)
+e132: (p16, PE_output_width_17_num_1)	(p17, PE_input_width_17_num_2)
+e137: (p17, PE_output_width_17_num_1)	(p18, PE_input_width_17_num_2)
+e142: (p18, PE_output_width_17_num_1)	(p19, PE_input_width_17_num_2)
+e147: (p19, PE_output_width_17_num_1)	(p20, PE_input_width_17_num_2)
+e152: (p20, PE_output_width_17_num_1)	(p21, PE_input_width_17_num_2)
+e157: (p21, PE_output_width_17_num_1)	(p14, PE_input_width_17_num_0)
+e162: (p3, PE_output_width_17_num_1)	(p14, PE_input_width_17_num_2)
+e167: (p14, PE_output_width_17_num_1)	(p22, PE_input_width_17_num_2)
+e172: (p22, PE_output_width_17_num_1)	(p1, PE_input_width_17_num_0)
+e177: (p1, PE_output_width_17_num_1)	(r21, reg)
+e184: (m3, MEM_output_width_1_num_2)	(r36, reg)
 
 ID to Names:
-p0: add_307_311_312$binop
-p1: add_313_317_318$binop
-p2: add_319_323_324$binop
-p3: add_325_329_330$binop
-p4: add_331_335_336$binop
-p5: add_337_341_342$binop
-p6: add_343_347_348$binop
-p7: add_349_353_354$binop
-p8: add_355_359_360$binop
-I20: io16_out_0_0
-I21: io16in_in_arg_0_0_0
-i22: io1_valid
-i23: io1in_reset
-m24: lakemem
-p25: mul_308_310_311$binop
-p26: mul_314_316_317$binop
-p27: mul_320_322_323$binop
-p28: mul_326_328_329$binop
-p29: mul_332_334_335$binop
-p30: mul_338_340_341$binop
-p31: mul_344_346_347$binop
-p32: mul_350_352_353$binop
-p33: mul_356_358_359$binop
-r34: reg_0_1
-r36: reg_1_1
-r38: reg_2_1
-p40: rshift$binop
+m0: hw_input_global_wrapper_global_wrapper_stencil$ub_hw_input_global_wrapper_global_wrapper_stencil_BANK_2_garnet
+i0: io1_hw_output_global_wrapper_glb_stencil_clkwrk_2_op_hcompute_hw_output_global_wrapper_glb_stencil_write_valid
+r0: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U10$reg0
+p0: op_hcompute_blur_stencil$inner_compute$lshr_i2751_i1211
+I0: io16_hw_output_global_wrapper_glb_stencil_clkwrk_2_op_hcompute_hw_output_global_wrapper_glb_stencil_write_0
+m1: hw_input_global_wrapper_global_wrapper_stencil$ub_hw_input_global_wrapper_global_wrapper_stencil_BANK_3_garnet
+p1: op_hcompute_blur_stencil_1$inner_compute$lshr_i2759_i1211
+I1: io16_hw_output_global_wrapper_glb_stencil_clkwrk_3_op_hcompute_hw_output_global_wrapper_glb_stencil_1_write_0
+r1: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U11$reg0
+i1: io1_hw_output_global_wrapper_glb_stencil_clkwrk_3_op_hcompute_hw_output_global_wrapper_glb_stencil_1_write_valid
+p2: op_hcompute_blur_unnormalized_stencil$inner_compute$const_i2766_i436
+I2: io16in_hw_input_stencil_clkwrk_0_op_hcompute_hw_input_global_wrapper_glb_stencil_read_0
+r2: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U12$reg0
+m2: hw_input_global_wrapper_global_wrapper_stencil$ub_hw_input_global_wrapper_global_wrapper_stencil_bank_4_garnet
+p3: op_hcompute_blur_unnormalized_stencil_1$inner_compute$const_i2771_i436
+I3: io16in_hw_input_stencil_clkwrk_1_op_hcompute_hw_input_global_wrapper_glb_stencil_1_read_0
+m3: op_hcompute_hw_output_global_wrapper_glb_stencil_1_port_controller_garnet
+r3: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U13$reg0
+p4: op_hcompute_blur_unnormalized_stencil_2$inner_compute$add_i2811_i126
+r4: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U14$reg0
+m4: op_hcompute_hw_output_global_wrapper_glb_stencil_port_controller_garnet
+p5: op_hcompute_blur_unnormalized_stencil_2$inner_compute$mul_i2800_i1291
+r5: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U15$reg0
+p6: op_hcompute_blur_unnormalized_stencil_2$inner_compute$muladd_s0_i2805_i1332
+r6: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U16$reg0
+p7: op_hcompute_blur_unnormalized_stencil_2$inner_compute$muladd_s0_i2806_i1332
+r7: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U17$reg0
+p8: op_hcompute_blur_unnormalized_stencil_2$inner_compute$muladd_s0_i2807_i1332
+r8: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U18$reg0
+r9: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U19$reg0
+p9: op_hcompute_blur_unnormalized_stencil_2$inner_compute$muladd_s0_i2808_i1332
+p10: op_hcompute_blur_unnormalized_stencil_2$inner_compute$muladd_s0_i2809_i1332
+r10: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U20$reg0
+p11: op_hcompute_blur_unnormalized_stencil_2$inner_compute$muladd_s0_i2810_i1332
+r11: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U21$reg0
+p12: op_hcompute_blur_unnormalized_stencil_2$inner_compute$muladd_s0_i2812_i1332
+r12: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U22$reg0
+p13: op_hcompute_blur_unnormalized_stencil_2$inner_compute$muladd_s1_i2804_i1373
+r13: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U3$reg0
+r14: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U4$reg0
+p14: op_hcompute_blur_unnormalized_stencil_3$inner_compute$add_i2932_i126
+r15: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U5$reg0
+p15: op_hcompute_blur_unnormalized_stencil_3$inner_compute$mul_i2921_i1291
+r16: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U6$reg0
+p16: op_hcompute_blur_unnormalized_stencil_3$inner_compute$muladd_s0_i2926_i1332
+r17: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U7$reg0
+p17: op_hcompute_blur_unnormalized_stencil_3$inner_compute$muladd_s0_i2927_i1332
+r18: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U8$reg0
+p18: op_hcompute_blur_unnormalized_stencil_3$inner_compute$muladd_s0_i2928_i1332
+r19: hw_input_global_wrapper_global_wrapper_stencil$d_reg__U9$reg0
+p19: op_hcompute_blur_unnormalized_stencil_3$inner_compute$muladd_s0_i2929_i1332
+p20: op_hcompute_blur_unnormalized_stencil_3$inner_compute$muladd_s0_i2930_i1332
+r20: io16_hw_output_global_wrapper_glb_stencil_clkwrk_2_op_hcompute_hw_output_global_wrapper_glb_stencil_write_0$reg6
+r21: io16_hw_output_global_wrapper_glb_stencil_clkwrk_3_op_hcompute_hw_output_global_wrapper_glb_stencil_1_write_0$reg15
+p21: op_hcompute_blur_unnormalized_stencil_3$inner_compute$muladd_s0_i2931_i1332
+p22: op_hcompute_blur_unnormalized_stencil_3$inner_compute$muladd_s0_i2933_i1332
+r22: io16in_hw_input_stencil_clkwrk_0_op_hcompute_hw_input_global_wrapper_glb_stencil_read_0$reg0
+p23: op_hcompute_blur_unnormalized_stencil_3$inner_compute$muladd_s1_i2925_i1373
+r23: io16in_hw_input_stencil_clkwrk_0_op_hcompute_hw_input_global_wrapper_glb_stencil_read_0$reg1
+r24: io16in_hw_input_stencil_clkwrk_0_op_hcompute_hw_input_global_wrapper_glb_stencil_read_0$reg2
+r25: io16in_hw_input_stencil_clkwrk_0_op_hcompute_hw_input_global_wrapper_glb_stencil_read_0$reg3
+r26: io16in_hw_input_stencil_clkwrk_0_op_hcompute_hw_input_global_wrapper_glb_stencil_read_0$reg4
+r27: io16in_hw_input_stencil_clkwrk_0_op_hcompute_hw_input_global_wrapper_glb_stencil_read_0$reg5
+r28: io16in_hw_input_stencil_clkwrk_1_op_hcompute_hw_input_global_wrapper_glb_stencil_1_read_0$reg10
+r29: io16in_hw_input_stencil_clkwrk_1_op_hcompute_hw_input_global_wrapper_glb_stencil_1_read_0$reg11
+r30: io16in_hw_input_stencil_clkwrk_1_op_hcompute_hw_input_global_wrapper_glb_stencil_1_read_0$reg12
+r31: io16in_hw_input_stencil_clkwrk_1_op_hcompute_hw_input_global_wrapper_glb_stencil_1_read_0$reg13
+r32: io16in_hw_input_stencil_clkwrk_1_op_hcompute_hw_input_global_wrapper_glb_stencil_1_read_0$reg14
+r33: io16in_hw_input_stencil_clkwrk_1_op_hcompute_hw_input_global_wrapper_glb_stencil_1_read_0$reg8
+r34: io16in_hw_input_stencil_clkwrk_1_op_hcompute_hw_input_global_wrapper_glb_stencil_1_read_0$reg9
+r35: io1_hw_output_global_wrapper_glb_stencil_clkwrk_2_op_hcompute_hw_output_global_wrapper_glb_stencil_write_valid$reg7
+r36: io1_hw_output_global_wrapper_glb_stencil_clkwrk_3_op_hcompute_hw_output_global_wrapper_glb_stencil_1_write_valid$reg16
 
 Netlist Bus:
-e1: 16
-e2: 16
-e3: 16
-e4: 16
-e5: 16
-e6: 16
-e7: 16
-e8: 16
-e9: 16
-e10: 16
-e11: 16
-e12: 16
-e13: 16
-e14: 16
-e15: 16
-e16: 16
-e17: 16
-e18: 16
-e20: 16
-e30: 16
-e31: 16
-e33: 16
-e34: 16
-e36: 16
-e37: 16
-e39: 1
-e40: 1
+e1: 17
+e2: 1
+e3: 17
+e4: 1
+e5: 17
+e6: 17
+e7: 17
+e8: 17
+e9: 17
+e10: 17
+e11: 17
+e14: 17
+e15: 17
+e16: 17
+e19: 17
+e20: 17
+e21: 17
+e22: 17
+e23: 17
+e24: 17
+e25: 17
+e26: 17
+e28: 17
+e29: 17
+e30: 17
+e31: 17
+e32: 17
+e33: 17
+e39: 17
+e40: 17
+e41: 17
+e42: 17
+e43: 17
+e44: 17
+e45: 17
+e46: 17
+e51: 17
+e56: 17
+e61: 17
+e66: 17
+e71: 17
+e76: 17
+e81: 17
+e86: 17
+e91: 17
+e96: 17
+e101: 17
+e108: 1
+e109: 17
+e115: 17
+e116: 17
+e117: 17
+e118: 17
+e119: 17
+e120: 17
+e121: 17
+e122: 17
+e127: 17
+e132: 17
+e137: 17
+e142: 17
+e147: 17
+e152: 17
+e157: 17
+e162: 17
+e167: 17
+e172: 17
+e177: 17
+e184: 1
