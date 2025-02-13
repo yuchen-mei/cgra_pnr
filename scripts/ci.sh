@@ -6,18 +6,28 @@ if [[ "$OS" == "linux" ]]; then
         # 1. Pull the Docker image
         docker pull stanfordaha/garnet:latest
 
-        # 2. Run the container, mounting the local cgra_pnr repo
+        # 2. Start the container and pass GITHUB_REF / GITHUB_SHA as env vars
         docker run -d --name garnet_container --rm -it \
+            -e GITHUB_REF="${GITHUB_REF}" \
+            -e GITHUB_SHA="${GITHUB_SHA}" \
             stanfordaha/garnet:latest bash
 
-        # 3. Checkout the current branch inside the container
-        docker exec -i garnet_container bash -c '
-            git config --global --add safe.directory /aha/cgra_pnr
+        # 3. Checkout the correct branch/commit in the container
+        docker exec -i garnet_container bash -c "
             set -e
+            git config --global --add safe.directory /aha/cgra_pnr
             cd /aha/cgra_pnr
-            CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-            git checkout "$CURRENT_BRANCH"
-        '
+            if [[ \"\$GITHUB_REF\" == refs/heads/* ]]; then
+                # If on a regular branch
+                BRANCH=\"\${GITHUB_REF##refs/heads/}\"
+                git fetch origin \"\$BRANCH\"
+                git checkout \"\$BRANCH\"
+            else
+                # Otherwise use commit SHA
+                git fetch --all
+                git checkout \"\$GITHUB_SHA\"
+            fi
+        "
 
         # 4. Build the placer (thunder)
         docker exec -i garnet_container bash -c '
