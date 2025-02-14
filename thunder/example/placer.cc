@@ -122,7 +122,7 @@ check_placement(const ::map<::string,
         char blk_type = blk_id[0];
         // hack here
         // FIXME: NEED TO REMOVE THIS HACK, WHICH IS CAUSED BY A MANTLE BUG
-        if (blk_type == 'i' || blk_type == 'I')
+        if (blk_type == 'i' || blk_type == 'I' || blk_type == 'u' || blk_type == 'U')
             continue;
         auto const[x, y] = pos;
         auto &blk_pos = available_pos.at(blk_type);
