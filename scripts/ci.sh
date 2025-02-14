@@ -3,19 +3,69 @@ set -e
 
 if [[ "$OS" == "linux" ]]; then
     if [[ "$BUILD_WHEEL" == true ]]; then
-        docker pull keyiz/manylinux-igraph
-        docker run -d --name manylinux --rm -it --mount type=bind,source="$(pwd)"/../cgra_pnr,target=/cgra_pnr keyiz/manylinux-igraph bash
+        # 1. Pull the Docker image
+        docker pull stanfordaha/garnet:latest
 
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/thunder && python setup.py bdist_wheel'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/thunder && auditwheel show dist/*'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/thunder && auditwheel repair dist/*'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/thunder && pip install wheelhouse/*'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/cyclone && python setup.py bdist_wheel'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/cyclone && auditwheel show dist/*'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/cyclone && auditwheel repair dist/*'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/cyclone && pip install wheelhouse/*'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr/ && pip install pytest && pytest -v tests/'
-        docker exec -i manylinux bash -c 'cd /cgra_pnr && mkdir wheelhouse && cp thunder/wheelhouse/* wheelhouse/ && cp cyclone/wheelhouse/* wheelhouse'
+        # 2. Start the container and pass GITHUB_REF / GITHUB_SHA as env vars
+        docker run -d --name garnet_container --rm -it \
+            -e GITHUB_REF="${GITHUB_REF}" \
+            -e GITHUB_SHA="${GITHUB_SHA}" \
+            stanfordaha/garnet:latest bash
+
+        # 3. Checkout the correct branch/commit in the container
+        docker exec -i garnet_container bash -c "
+            set -e
+            git config --global --add safe.directory /aha/cgra_pnr
+            cd /aha/cgra_pnr
+            if [[ \"\$GITHUB_REF\" == refs/heads/* ]]; then
+                # If on a regular branch
+                BRANCH=\"\${GITHUB_REF##refs/heads/}\"
+                git fetch origin \"\$BRANCH\"
+                git checkout \"\$BRANCH\"
+            else
+                # Otherwise use commit SHA
+                git fetch --all
+                git checkout \"\$GITHUB_SHA\"
+            fi
+        "
+
+        # 4. Build the placer (thunder)
+        docker exec -i garnet_container bash -c '
+            set -e
+            cd /aha/cgra_pnr/thunder
+            mkdir -p build
+            cd build
+            cmake .. -DCMAKE_BUILD_TYPE=Release
+            make -j placer
+        '
+
+        # 5. Build the router (cyclone)
+        docker exec -i garnet_container bash -c '
+            set -e
+            cd /aha/cgra_pnr/cyclone
+            mkdir -p build
+            cd build
+            cmake .. -DCMAKE_BUILD_TYPE=Release
+            make -j router
+        '
+
+        # 6. pip install -e for thunder and cyclone
+        docker exec -i garnet_container bash -c '
+            set -e
+            cd /aha/cgra_pnr/thunder
+            pip install -e .
+            cd /aha/cgra_pnr/cyclone
+            pip install -e .
+        '
+
+        # 7. Run aha map and aha pnr
+        docker exec -i garnet_container bash -c '
+            set -e
+            cd /aha/cgra_pnr
+            source /aha/bin/activate
+            aha map apps/pointwise
+            aha pnr apps/pointwise --width 4 --height 4
+        '
     fi
 
 elif [[ "$OS" == "osx" ]]; then
